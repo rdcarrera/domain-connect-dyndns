@@ -1,11 +1,8 @@
-FROM debian:10
+FROM python:3
 ENV CONFIG_PATH=/config \
     CONFIG_FILE=settings.txt \
     DOCKER_USER=user
 COPY /assets /assets
-RUN apt update -y
-RUN apt install python3 -y
-RUN apt install python3-pip -y
 RUN pip3 install -U pip
 RUN pip3 install domain-connect-dyndns
 RUN chmod +x "/assets/entrypoint"
