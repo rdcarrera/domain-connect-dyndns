@@ -26,7 +26,11 @@
     [ -z ${DOMAIN} ] \
     && echo "The domain variable is empty" \
     && exit 1
-    ! domain-connect-dyndns setup --domain ${DOMAIN} --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output} \
+    check_config_path
+    [ -z ${PROTOCOLS} ] \
+    && echo "The protocols variable is empty" \
+    && exit 1
+    ! domain-connect-dyndns setup --domain ${DOMAIN} --protocols ${PROTOCOLS} --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output} \
     && echo "Error to create the config file" \
     && exit 1
     grep "Could not store domain config" ${OUTPUT_PATH:-/tmp/output} &> /dev/null \
