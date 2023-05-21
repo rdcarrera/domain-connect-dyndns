@@ -11,7 +11,8 @@ With this container you can create and update dyndns thanks to [domain-connect-d
 > The container has two actions:
 >
 > > **setup**:
-> > >With this action you can create the domain-connect-dyndns's configuration,
+> >
+> > > With this action you can create the domain-connect-dyndns's configuration,
 > > >
 > > > You need to pass the domain name variable → DOMAIN
 > > >
@@ -21,21 +22,17 @@ With this container you can create and update dyndns thanks to [domain-connect-d
 
 ```sh
 docker run -it --rm --name dyndns-setup -v ~/config:/config -e DOMAIN=example.org -e PROTOCOLS='ipv4 ipv6' tobiaswild/domain-connect-dyndns setup
-*** domain-connect-dyndns 0.0.9 ***
-
-Please open
-https://*********
-and provide us the access code:
 ```
 
 > > **update**:
+> >
 > > > With this action the container execute in loop the update option of the domain-connect-dyndns
 > > >
 > > > This is the **default** action defined inside the Dockerfile.
 > > >
 > > > **Example:**
 
-```console
+```sh
 docker run -d --name dyndns-setup -v ~/config:/config tobiaswild/domain-connect-dyndns
 ```
 
