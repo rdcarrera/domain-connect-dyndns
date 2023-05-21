@@ -1,16 +1,17 @@
-FROM centos:8
+FROM debian:10
 ENV CONFIG_PATH=/config \
     CONFIG_FILE=settings.txt \
     DOCKER_USER=user
 COPY /assets /assets
-RUN yum -y update \
- && yum -y install python38 \
- && pip3 install -U pip \
- && pip3 install domain-connect-dyndns \
- && chmod +x "/assets/entrypoint" \
- && adduser ${DOCKER_USER} \
- && mkdir -p ${CONFIG_PATH} \
- && chown ${DOCKER_USER} ${CONFIG_PATH}
+RUN apt update -y
+RUN apt install python3 -y
+RUN apt install python3-pip -y
+RUN pip3 install -U pip
+RUN pip3 install domain-connect-dyndns
+RUN chmod +x "/assets/entrypoint"
+RUN adduser ${DOCKER_USER}
+RUN mkdir -p ${CONFIG_PATH}
+RUN chown ${DOCKER_USER} ${CONFIG_PATH}
 USER ${DOCKER_USER}
 ENTRYPOINT [ "/assets/entrypoint" ]
 VOLUME ${CONFIG_PATH}
