@@ -3,7 +3,7 @@ ENV CONFIG_PATH=/config \
     CONFIG_FILE=settings.txt \
     DOCKER_USER=user
 COPY /assets /assets
-RUN pip3 install -U pip
+RUN pip3 install --upgrade pip
 RUN pip3 install domain-connect-dyndns
 RUN chmod +x "/assets/entrypoint"
 RUN adduser ${DOCKER_USER}
