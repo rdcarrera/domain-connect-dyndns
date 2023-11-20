@@ -52,3 +52,7 @@ docker run -d --name dyndns-setup -v ~/config:/config tobiaswild/domain-connect-
 | PROTOCOLS   | false    | ipv4          | The protocols that should be used.                    |
 | SLEEP_TIME  | false    | 120           | The time to wait between loop's iteration             |
 | DOCKER_USER | false    | user          | The user within the container who execute the action. |
+
+## Other inspirations
+
+- [lcworld/domain-connect-dyndns-docker](https://github.com/lcworld/domain-connect-dyndns-docker)

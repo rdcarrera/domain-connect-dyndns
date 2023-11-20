@@ -1,43 +1,50 @@
 #!/bin/bash
-  function check_config_path(){
-    ! grep ${CONFIG_PATH:-/config} /proc/mounts &> /dev/null \
-    && echo "Please, you must to mount the CONFIG_PATH as DOCKER volume" \
-    && exit 1
-  }
-  CONFIG=${CONFIG_PATH:-/config}/${CONFIG_FILE:-settings.txt}
-  case "$@" in
-  "update")
-    check_config_path
-    [ ! -f ${CONFIG} ] \
-    && echo "The settings file doesn't exist" \
-    && exit 1
-    while [ 1 ];do
-      domain-connect-dyndns update --all --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output}
-      # Domain-connect-dyndns doesn't have exit code
-      # I used grep to check if domain-connect-dyndns print error message
-      grep "Could not update DNS records." ${OUTPUT_PATH:-/tmp/output} &> /dev/null \
-      && echo "The updated of dns failed" \
-      && exit 1
-      sleep ${SLEEP_TIME:-300}
-    done
+check_config_path() {
+  ! grep ${CONFIG_PATH:-/config} /proc/mounts &>/dev/null &&
+    echo "Please, you must to mount the CONFIG_PATH as DOCKER volume" &&
+    exit 1
+}
+
+update() {
+  check_config_path
+  [ ! -f ${CONFIG} ] &&
+    echo "The settings file doesn't exist" &&
+    exit 1
+  while [ 1 ]; do
+    domain-connect-dyndns update --all --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output}
+    # Domain-connect-dyndns doesn't have exit code
+    # I used grep to check if domain-connect-dyndns print error message
+    grep "Could not update DNS records." ${OUTPUT_PATH:-/tmp/output} &>/dev/null &&
+      echo "The updated of dns failed" &&
+      exit 1
+    sleep ${SLEEP_TIME:-300}
+  done
+  exit
+}
+
+setup() {
+  check_config_path
+  [ -z ${DOMAIN} ] &&
+    echo "The domain variable is empty" &&
+    exit 1
+  ! domain-connect-dyndns setup --domain ${DOMAIN} --protocols ${PROTOCOLS:-ipv4} --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output} &&
+    echo "Error to create the config file" &&
+    exit 1
+  grep "Could not store domain config" ${OUTPUT_PATH:-/tmp/output} &>/dev/null &&
+    echo "Error to create the config file" &&
+    exit 1
+  exit
+}
+
+CONFIG=${CONFIG_PATH:-/config}/${CONFIG_FILE:-settings.txt}
+
+case "$1" in
+update | setup)
+  ${1} "${@:2}"
   ;;
-  "setup"|"config")
-    check_config_path
-    [ -z ${DOMAIN} ] \
-    && echo "The domain variable is empty" \
-    && exit 1
-    ! domain-connect-dyndns setup --domain ${DOMAIN} --protocols ${PROTOCOLS:-ipv4} --config ${CONFIG} | tee ${OUTPUT_PATH:-/tmp/output} \
-    && echo "Error to create the config file" \
-    && exit 1
-    grep "Could not store domain config" ${OUTPUT_PATH:-/tmp/output} &> /dev/null \
-    && echo "Error to create the config file" \
-    && exit 1
+*)
+  echo -e "The defined cmd doesn't exist inside the container: $@\t\nContainer valid options: 'update' 'setup'" && exit 1
   ;;
-  *)
-    [ ! -f $@ ] || [ ! -x $@ ] \
-    && echo -e "The defined cmd doesn't exist inside the container: $@\t\nContainer valid options: 'update' 'setup'" \
-    && exit 1
-    exec $@
-  ;;
-  esac
-  exit 0
+
+esac
+exit 0

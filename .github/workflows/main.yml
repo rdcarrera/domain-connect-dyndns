@@ -1,13 +1,33 @@
-name: Docker Publish
+name: Docker
 
 on:
   push:
     branches:
-      - "main"
+      - main
+    tags:
+      - v*
+  pull_request:
+
+env:
+  IMAGE_NAME: domain-connect-dyndns
 
 jobs:
-  docker:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          if [ -f docker-compose.test.yml ]; then
+            docker-compose --file docker-compose.test.yml build
+            docker-compose --file docker-compose.test.yml run sut
+          else
+            docker build . --file Dockerfile
+          fi
+
+  push:
+    runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,10 +43,10 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/domain-connect-dyndns:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:latest
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/domain-connect-dyndns
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
