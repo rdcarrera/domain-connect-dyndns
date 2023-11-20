@@ -21,7 +21,7 @@ You need to pass the domain name variable → DOMAIN
 **Example**:
 
 ```sh
-docker run -it --rm --name dyndns-setup -v ~/config:/config -e DOMAIN=example.org -e PROTOCOLS='ipv4 ipv6' tobiaswild/domain-connect-dyndns setup
+docker run -it --rm --name domain-connect-dyndns -v ~/config:/config -e DOMAIN=example.org tobiaswild/domain-connect-dyndns setup
 ```
 
 ### update
@@ -33,8 +33,12 @@ This is the **default** action defined inside the Dockerfile.
 **Example:**
 
 ```sh
-docker run -d --name dyndns-setup -v ~/config:/config tobiaswild/domain-connect-dyndns
+docker run -d --name domain-connect-dyndns -v ~/config:/config tobiaswild/domain-connect-dyndns
 ```
+
+## Docker Compose
+
+The repo contains a simple `docker-compose.yml` file.
 
 ## Volumes
 
@@ -46,9 +50,9 @@ docker run -d --name dyndns-setup -v ~/config:/config tobiaswild/domain-connect-
 
 | name        | required | default value | description                                           |
 | ----------- | -------- | ------------- | ----------------------------------------------------- |
-| CONFIG_PATH | false    | /config       | The config path inside the container.                 |
+| CONFIG_PATH | true     | /config       | The config path inside the container.                 |
 | CONFIG_FILE | false    | settings.txt  | The configuration file.                               |
-| DOMAIN      | true     | null          | The domain to keep up to date.                        |
+| DOMAIN      | true     |               | The domain to keep up to date.                        |
 | PROTOCOLS   | false    | ipv4          | The protocols that should be used.                    |
 | SLEEP_TIME  | false    | 120           | The time to wait between loop's iteration             |
 | DOCKER_USER | false    | user          | The user within the container who execute the action. |

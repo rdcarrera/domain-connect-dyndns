@@ -1,0 +1,8 @@
+version: '3.3'
+
+services:
+  domain-connect-dyndns:
+    image: tobiaswild/domain-connect-dyndns:latest
+    container_name: domain-connect-dyndns
+    volumes:
+      - ~/config:/config
